@@ -32,6 +32,8 @@ type Target struct {
 	Interval int
 	// Look for this string in the response body
 	Keyword string
+	// Run specific  command 
+	Commandrun string
 }
 
 type TargetStatus struct {

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
-
 	"github.com/go-gomail/gomail"
 )
 
@@ -36,8 +35,8 @@ func EmailAlert(status TargetStatus, config Config) error {
 		port = 25
 	}
 
-	m := gomail.NewMailer(hostname, "", "", port)
-	if err := m.Send(msg); err != nil {
+	m := gomail.NewDialer(hostname, port,  "", "")
+	if err := m.DialAndSend(msg); err != nil {
 		return fmt.Errorf("error sending alert email, err %s", err)
 	}
 

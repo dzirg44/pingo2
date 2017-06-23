@@ -6,8 +6,14 @@ import (
 	"time"
 
 	"golang.org/x/net/icmp"
-	"golang.org/x/net/internal/iana"
+//	"golang.org/x/net/internal/iana"
 	"golang.org/x/net/ipv4"
+)
+
+const (
+	TimeSliceLength  = 8
+	ProtocolICMP     = 1
+	ProtocolIPv6ICMP = 58
 )
 
 const ICMPReadTimeout = 2
@@ -60,7 +66,7 @@ func Ping(hostname string) (reply bool, err error) {
 	if err != nil {
 		return false, err
 	}
-	rm, err := icmp.ParseMessage(iana.ProtocolICMP, rb[:n])
+	rm, err := icmp.ParseMessage(ProtocolICMP, rb[:n])
 	if err != nil {
 		return false, err
 	}
