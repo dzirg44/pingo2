@@ -32,7 +32,7 @@ type Target struct {
 	Interval int
 	// Look for this string in the response body
 	Keyword string
-	// Run specific  command 
+	// Run specific  command
 	Commandrun string
 }
 
@@ -63,7 +63,7 @@ func runTarget(t Target, res chan TargetStatus, config Config) {
 		log.Printf("[%d:-] target address %s could not be read, %s", t.Id, addrURL, err)
 		return
 	}
-
+	fmt.Println(t.Commandrun)
 	if config.Standoff == 0 {
 		config.Standoff = StandoffInterval
 	} else if config.Standoff <= t.Interval {
@@ -190,6 +190,19 @@ func runTarget(t Target, res chan TargetStatus, config Config) {
 }
 
 func alert(status *TargetStatus, config Config) {
+	if status.Target.Commandrun != "" {
+		command := status.Target.Commandrun
+		err := Commandrun(command, config)
+		if err != nil {
+			log.Printf("%s", err)
+		}
+		log.Printf("[%d:%s] alert sent to %s", status.Target.Id, status.Target.Addr, config.Alert.ToEmail, status.Target.Commandrun)
+	} else {
+		if debug {
+			log.Printf("[%d:%s] alert NOT sent as no 'To:' email specified", status.Target.Id, status.Target.Addr)
+		}
+	}
+
 	if config.Alert.ToEmail != "" {
 		err := EmailAlert(*status, config)
 		if err != nil {
