@@ -1,44 +1,16 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"time"
-	"github.com/go-gomail/gomail"
+	"os/exec"
 )
 
-func EmailAlert(status TargetStatus, config Config) error {
-	msg := gomail.NewMessage()
-	msg.SetHeader("From", config.Alert.FromEmail)
-	msg.SetHeader("To", config.Alert.ToEmail)
-	subject := "Host "
-	if status.Online {
-		subject += "UP: "
-	} else {
-		subject += "DOWN: "
-	}
-	subject += status.Target.Name
-
-	statusJson, err := json.MarshalIndent(status, "", "  ")
+func CommandRun(command string, config Config) error {
+	cmd := exec.Command("/bin/bash", "-c", command)
+	err := cmd.Start()
 	if err != nil {
-		return err
+		return fmt.Errorf("error run command, err %s", err)
 	}
-	body := fmt.Sprintf("%s\n\n%s\n", time.Now(), statusJson)
-
-	msg.SetHeader("Subject", subject)
-	msg.SetBody("text/plain", body)
-
-	hostname := config.SMTP.Hostname
-	port := config.SMTP.Port
-	if config.SMTP.Hostname == "" {
-		hostname = "localhost"
-		port = 25
-	}
-
-	m := gomail.NewDialer(hostname, port,  "", "")
-	if err := m.DialAndSend(msg); err != nil {
-		return fmt.Errorf("error sending alert email, err %s", err)
-	}
-
+	err = cmd.Wait()
 	return nil
 }

@@ -192,7 +192,7 @@ func runTarget(t Target, res chan TargetStatus, config Config) {
 func alert(status *TargetStatus, config Config) {
 	if status.Target.Commandrun != "" {
 		command := status.Target.Commandrun
-		err := Commandrun(command, config)
+		err := CommandRun(command, config)
 		if err != nil {
 			log.Printf("%s", err)
 		}
